@@ -2,7 +2,7 @@ import dataclasses
 import typing as tp
 
 import pytest
-import testlib
+from tools.testlib import testlib
 
 from .fizz_buzz import get_fizz_buzz
 
