@@ -2,7 +2,7 @@ import dataclasses
 import copy
 
 import pytest
-import testlib
+from tools.testlib import testlib
 
 from .reverse_list import reverse_iterative, reverse_inplace_iterative, reverse_inplace, reverse_reversed, reverse_slice
 

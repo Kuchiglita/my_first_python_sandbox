@@ -1,7 +1,7 @@
 import dataclasses
 
 import pytest
-import testlib
+from tools.testlib import testlib
 
 from .middle_value_of_triple import get_middle_value
 

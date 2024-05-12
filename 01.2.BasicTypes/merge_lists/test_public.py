@@ -2,7 +2,7 @@ import copy
 import dataclasses
 
 import pytest
-import testlib
+from tools.testlib import testlib
 
 from .merge_lists import merge_iterative, merge_sorted
 

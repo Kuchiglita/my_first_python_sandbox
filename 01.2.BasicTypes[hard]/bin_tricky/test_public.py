@@ -3,7 +3,7 @@ import dataclasses
 import itertools
 
 import pytest
-import testlib
+from tools.testlib import testlib
 
 from .bin_tricky import find_median
 

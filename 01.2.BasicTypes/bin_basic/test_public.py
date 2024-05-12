@@ -4,7 +4,7 @@ import typing as tp
 from pathlib import Path
 
 import pytest
-import testlib
+from tools.testlib import testlib
 
 from .bin_basic import find_value
 
