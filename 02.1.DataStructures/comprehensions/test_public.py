@@ -3,7 +3,7 @@ import dis
 import types
 import typing as tp
 
-import testlib
+from tools.testlib import testlib
 
 from . import comprehensions as comp
 
