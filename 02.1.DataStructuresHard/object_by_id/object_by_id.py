@@ -15,8 +15,5 @@ def get_object_by_id(object_id: int) -> tp.Union[int, float, tuple, list, str, b
     :param object_id: Object Id.
     :return: An object that corresponds to object_id.
     """
-    object_ids_list: list
-
-
-print(id(True))
+    return
 

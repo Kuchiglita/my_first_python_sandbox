@@ -15,3 +15,10 @@ def input_(prompt: tp.Optional[str] = None,
     `inp` and `out` arguments are optional and should default to `sys.stdin`
     and `sys.stdout` respectively.
     """
+    inp = inp or sys.stdin
+    out = out or sys.stdout
+    s: str = inp.read().rstrip('\n')
+    if prompt:
+        out.write(prompt)
+        out.flush()
+    return s or None
