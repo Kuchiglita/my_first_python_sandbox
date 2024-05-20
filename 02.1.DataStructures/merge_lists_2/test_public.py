@@ -4,7 +4,7 @@ import itertools
 import typing as tp
 
 import pytest
-import testlib
+from tools.testlib import testlib
 
 from .merge_lists import merge
 

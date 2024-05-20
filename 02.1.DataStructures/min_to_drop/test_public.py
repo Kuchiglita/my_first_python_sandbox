@@ -3,7 +3,7 @@ import dataclasses
 import typing as tp
 
 import pytest
-import testlib
+from tools.testlib import testlib
 
 from .min_to_drop import get_min_to_drop
 

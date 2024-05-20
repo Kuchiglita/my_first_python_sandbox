@@ -3,7 +3,7 @@ import dataclasses
 import typing as tp
 
 import pytest
-import testlib
+from tools.testlib import testlib
 
 from .reverse_dict import revert
 

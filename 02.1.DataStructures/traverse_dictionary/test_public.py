@@ -3,7 +3,7 @@ import dataclasses
 import typing as tp
 
 import pytest
-import testlib
+from tools.testlib import testlib
 
 from .traverse_dictionary import traverse_dictionary_immutable, traverse_dictionary_mutable, \
     traverse_dictionary_iterative
