@@ -4,7 +4,7 @@ import timeit
 from pathlib import Path
 
 import pytest
-import testlib
+from tools.testlib import testlib
 
 from .normalize_path import normalize_path
 
