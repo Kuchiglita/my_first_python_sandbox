@@ -1,3 +1,4 @@
+import zlib
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -46,6 +47,9 @@ def read_blob(path: Path) -> Blob:
     :param path: path to blob-file
     :return: blob-file type and content
     """
+    by: list[bytes] = zlib.decompress(path.read_bytes()).split(b'\x00')
+    type = by[0].split(bytes(' ', 'utf8'))[0]
+    return Blob(type_=BlobType.from_bytes(type), content=by[1])
 
 
 def traverse_objects(obj_dir: Path) -> dict[str, Blob]:
@@ -54,6 +58,12 @@ def traverse_objects(obj_dir: Path) -> dict[str, Blob]:
     :param obj_dir: path to git "objects" directory
     :return: mapping from hash to blob with every blob found
     """
+    dict_out: dict[str, Blob] = {}
+    objects = list(obj_dir.glob('**/*'))
+    for obj in objects:
+        for blob_file in list(obj.glob('**/*')):
+            dict_out[str(blob_file)] = read_blob(blob_file)
+    return dict_out
 
 
 def parse_commit(blob: Blob) -> Commit:
@@ -62,6 +72,23 @@ def parse_commit(blob: Blob) -> Commit:
     :param blob: blob with commit type
     :return: parsed commit
     """
+    assert blob.type_ == BlobType.COMMIT
+    c = blob.content.decode('utf8').split('\n')
+    tree_hash = c.pop(0).split(' ')
+    tree_hash.pop(0)
+    tree_hash = ' '.join(tree_hash)
+    parents = c.pop(0).split(' ')
+    parents.pop(0)
+    parents = [' '.join(parents)]
+    author = c.pop(0).split(' ')
+    author.pop(0)
+    author = ' '.join(author)
+    committer = c.pop(0).split(' ')
+    committer.pop(0)
+    committer = ' '.join(committer)
+    c.pop(0)
+    message = '\n'.join(c)
+    return Commit(tree_hash=tree_hash, parents=parents, author=author, committer=committer, message=message)
 
 
 def parse_tree(blobs: dict[str, Blob], tree_root: Blob, ignore_missing: bool = True) -> Tree:
@@ -74,6 +101,20 @@ def parse_tree(blobs: dict[str, Blob], tree_root: Blob, ignore_missing: bool = T
     NB. Children blobs are not being parsed according to type.
         Also nested tree blobs are not being traversed.
     """
+    assert tree_root.type_ == BlobType.TREE
+    tree = tree_root.content.decode('utf8').split('\n')
+    children = {}
+    for child in tree:
+        if child:
+            child = child.split(' ')
+            if ignore_missing:
+                try:
+                    children[child[1]] = blobs[child[1]]
+                except KeyError:
+                    pass
+            else:
+                children[child[1]] = blobs[child[1]]
+    return Tree(children=children)
 
 
 def find_initial_commit(blobs: dict[str, Blob]) -> Commit:
@@ -93,3 +134,10 @@ def search_file(blobs: dict[str, Blob], tree_root: Blob, filename: str) -> Blob:
     :param filename: requested file
     :return: requested file blob
     """
+
+
+p: Path = Path(r'C:\Users\Ильнур\PycharmProjects\my_first_python_sandbox\03.1.FunctionsStringsIOHard\git_blob\objects')
+blob_path = Path(r'C:\Users\Ильнур\PycharmProjects\my_first_python_sandbox\03.1.FunctionsStringsIOHard\git_blob\objects\1b\d9ee3785043bb23af69523af7a59b43d1fe533')
+#s = zlib.decompress(p.read_bytes()).decode('utf8')
+#print(read_blob(p))
+print(parse_commit(read_blob(blob_path)))

@@ -2,11 +2,13 @@
 from typing import Any
 
 
-def f0() -> Any:
+def f0(x) -> Any:
     pass
 
 
-def f1() -> Any:
+def f1(x) -> Any:
+    a = 0
+    return a
     pass
 
 

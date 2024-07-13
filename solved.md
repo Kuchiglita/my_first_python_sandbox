@@ -19,14 +19,14 @@
 | reverse_dict           |   x    |     5     |
 | traverse_dictionary    |   x    |    10     |
 | alphabet               |   x    |    10     |
-| banner_search_system   |        |    10     |
+| banner_search_system   |   x    |    10     |
 | object_by_id           |        |    15     |
-| caesar_cipher          |        |     5     |
-| count_util             |        |     5     |
-| git_log                |        |     5     |
-| input_                 |        |    10     |
-| merge_lists_3          |        |    10     |
-| normalize_path         |        |    10     |
+| caesar_cipher          |   x    |     5     |
+| count_util             |   x    |     5     |
+| git_log                |   x    |     5     |
+| input_                 |   x    |    10     |
+| merge_lists_3          |   x    |    10     |
+| normalize_path         |   x    |    10     |
 | git_blob               |        |    30     |
 | tail                   |        |    20     |
 | calc                   |        |     5     |
@@ -40,7 +40,7 @@
 | list_twist             |        |    20     |
 | time_to_zone           |        |    20     |
 | time_to_range          |        |    20     |
-| vm                     |  6.67  |    400    |
+| vm                     |  1.00  |    400    |
 | simple_pass_manager    |        |    20     | 
 | cli                    |        |     0     | 
 | context_manager        |        |    15     |
@@ -70,9 +70,9 @@ $ python point_counter.py
 
 <!--- Script Output Start --->
 ```
-Решено задач: 18
-Баллов за задачи: 141.67
+Решено задач: 25
+Баллов за задачи: 191.0
 Бонусные баллы: 50
-Итого баллов: 191.67
+Итого баллов: 241.0
 Оценка: F
 ```
