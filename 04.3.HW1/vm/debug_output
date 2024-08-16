@@ -1,0 +1,14 @@
+Frame: starting run
+Frame: instructions list:
+Frame: instrInstruction(opname='LOAD_NAME', opcode=101, arg=0, argval='print', argrepr='print', offset=0, starts_line=2, is_jump_target=False)
+Frame: instrInstruction(opname='BUILD_LIST', opcode=103, arg=0, argval=0, argrepr='', offset=2, starts_line=None, is_jump_target=False)
+Frame: instrInstruction(opname='LOAD_CONST', opcode=100, arg=0, argval=(2, 4, 6), argrepr='(2, 4, 6)', offset=4, starts_line=None, is_jump_target=False)
+Frame: instrInstruction(opname='LIST_EXTEND', opcode=162, arg=1, argval=1, argrepr='', offset=6, starts_line=None, is_jump_target=False)
+Frame: instrInstruction(opname='CALL_FUNCTION', opcode=131, arg=1, argval=1, argrepr='', offset=8, starts_line=None, is_jump_target=False)
+Frame: instrInstruction(opname='POP_TOP', opcode=1, arg=None, argval=None, argrepr='', offset=10, starts_line=None, is_jump_target=False)
+Frame: instrInstruction(opname='LOAD_CONST', opcode=100, arg=1, argval=None, argrepr='None', offset=12, starts_line=None, is_jump_target=False)
+Frame: instrInstruction(opname='RETURN_VALUE', opcode=83, arg=None, argval=None, argrepr='', offset=14, starts_line=None, is_jump_target=False)
+Frame: Entering func_op named load_name_op cur_intrs_index = 0
+Frame: Entering func_op named build_list_op cur_intrs_index = 1
+Frame: Entering func_op named load_const_op cur_intrs_index = 2
+Frame: Entering func_op named list_extend_op cur_intrs_index = 3

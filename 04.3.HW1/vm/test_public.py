@@ -60,7 +60,7 @@ class Scorer:
 
 
 def test_version() -> None:
-    assert '3.10.6' == sys.version.split(' ', maxsplit=1)[0], 'To do this task you need python=3.10.6'
+    assert '3.9.7' == sys.version.split(' ', maxsplit=1)[0], 'To do this task you need python=3.9.7'
 
 
 @pytest.fixture(scope='module')
