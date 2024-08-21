@@ -10,13 +10,6 @@ import typing as tp
 
 
 class Frame:
-    """
-    Frame header in cpython with description
-        https://github.com/python/cpython/blob/3.9/Include/frameobject.h#L17
-
-    Text description of frame parameters
-        https://docs.python.org/3/library/inspect.html?highlight=frame#types-and-members
-    """
 
     def __init__(self,
                  frame_code: types.CodeType,
@@ -26,7 +19,7 @@ class Frame:
         self.code = frame_code
         self.builtins = frame_builtins
         self.globals = frame_globals
-        self.locals = {}
+        self.locals = frame_locals if frame_locals is not None else {}
         self.data_stack: tp.Any = []
         self.return_value = None
         self.current_instruction_index = 0
@@ -63,34 +56,30 @@ class Frame:
         while self.current_instruction_index < len(instructions):
             instruction = instructions[self.current_instruction_index]
             with open("debug_output", "a") as f:
-                f.write(f"Frame: Entering func_op named {instruction.opname.lower() + '_op'} cur_intrs_index = {self.current_instruction_index}\n")
+                f.write(
+                    f"Frame: Entering func_op named {instruction.opname.lower() + '_op'}\n")
             self.current_instruction_index += 1
             getattr(self, instruction.opname.lower() + "_op")(instruction.argval)  # self.opname_op(arg)
         return self.return_value
 
     def call_function_op(self, arg: int) -> None:
-        """
-        Operation description:
-            https://docs.python.org/release/3.9.7/library/dis.html#opcode-CALL_FUNCTION
-
-        Operation realization:
-            https://github.com/python/cpython/blob/3.9/Python/ceval.c#L3496
-        """
         arguments = self.popn(arg)
         f = self.pop()
         self.push(f(*arguments))
 
+    def load_fast_op(self, arg: tp.Any) -> None:
+        """arg is a variable from co_varnames"""
+        with open("debug_output", "a") as f:
+            f.write(f"Frame: locals are: {self.locals}; co_varnames are: {self.code.co_varnames}\n")
+        self.push(self.locals[arg])
+
+    def store_fast_op(self, arg: tp.Any) -> None:
+        self.locals[arg] = self.pop()
+
+    def delete_fast_op(self, arg: tp.Any) -> None:
+        del self.locals[arg]
+
     def load_name_op(self, arg: str) -> None:
-        """
-        Partial realization
-
-        Operation description:
-            https://docs.python.org/release/3.9.7/library/dis.html#opcode-LOAD_NAME
-
-        Operation realization:
-            https://github.com/python/cpython/blob/3.9/Python/ceval.c#L2416
-        """
-        # TODO: parse all scopes
         if arg in self.builtins:
             self.push(self.builtins[arg])
         elif arg in self.locals:
@@ -99,47 +88,38 @@ class Frame:
             self.push(self.globals[arg])
 
     def load_global_op(self, arg: str) -> None:
-        """
-        Operation description:
-            https://docs.python.org/release/3.9.7/library/dis.html#opcode-LOAD_GLOBAL
-
-        Operation realization:
-            https://github.com/python/cpython/blob/3.9/Python/ceval.c#L2480
-        """
-        # TODO: parse all scopes
         if arg in self.builtins:
             self.push(self.builtins[arg])
         elif arg in self.globals:
             self.push(self.globals[arg])
 
     def load_const_op(self, arg: tp.Any) -> None:
-        """
-        Operation description:
-            https://docs.python.org/release/3.9.7/library/dis.html#opcode-LOAD_CONST
-
-        Operation realization:
-            https://github.com/python/cpython/blob/3.9/Python/ceval.c#L1346
-        """
         self.push(arg)
 
-    def return_value_op(self, arg: tp.Any) -> None:
-        """
-        Operation description:
-            https://docs.python.org/release/3.9.7/library/dis.html#opcode-RETURN_VALUE
+    def load_method_op(self, arg: str) -> None:
+        obj = self.pop()
+        if hasattr(obj, arg):
+            method = getattr(obj, arg)
+            if callable(method):
+                self.push(method)
+                self.push(obj)
+            else:
+                self.push(None)
+                self.push(method)
+        else:
+            self.push(None)
+            self.push(getattr(obj, arg))
 
-        Operation realization:
-            https://github.com/python/cpython/blob/3.9/Python/ceval.c#L1911
-        """
+    def call_method_op(self, arg: int) -> None:
+        args = self.popn(arg)
+        method = self.pop()
+        obj = self.pop()
+        self.push(method(obj, *args))
+
+    def return_value_op(self, arg: tp.Any) -> None:
         self.return_value = self.pop()
 
     def pop_top_op(self, arg: tp.Any) -> None:
-        """
-        Operation description:
-            https://doc s.python.org/release/3.9.7/library/dis.html#opcode-POP_TOP
-
-        Operation realization:
-            https://github.com/python/cpython/blob/3.9/Python/ceval.c#L1361
-        """
         self.pop()
 
     def make_function_op(self, arg: int) -> None:
@@ -174,23 +154,18 @@ class Frame:
         self.push(f)
 
     def store_name_op(self, arg: str) -> None:
-        """
-        Operation description:
-            https://docs.python.org/release/3.9.7/library/dis.html#opcode-STORE_NAME
-
-        Operation realization:
-            https://github.com/python/cpython/blob/3.9/Python/ceval.c#L2280
-        """
         const = self.pop()
         self.locals[arg] = const
 
     def store_global_op(self, arg: str) -> None:
-        """
-        Operation description:
-            https://docs.python.org/release/3.9.7/library/dis.html#opcode-STORE_GLOBAL
-        """
         const = self.pop()
         self.globals[arg] = const
+
+    def call_method_op(self, arg: int) -> None:
+        args = self.popn(arg)
+        method = self.pop()
+        obj = self.pop()
+
 
     def unpack_sequence_op(self, arg: int) -> None:
         unpacking = self.pop()
@@ -200,6 +175,7 @@ class Frame:
     def extended_arg_op(self, arg: int) -> None:
         pass
 
+    # BUILDS AND CONTAINERS
     def build_tuple_op(self, arg: int) -> None:
         self.push(tuple(self.popn(arg)))
 
@@ -220,7 +196,9 @@ class Frame:
     def build_const_key_map_op(self, arg: int) -> None:  # is it right?
         keys = self.pop()
         values = self.popn(arg)
-        my_dict = zip(keys, values)
+        my_dict = {}
+        for i in range(len(keys)):
+            my_dict[keys[i]] = values[i]
         self.push(my_dict)
 
     def build_string_op(self, arg: int) -> None:
@@ -236,6 +214,33 @@ class Frame:
             b = self.pop()
             c = self.pop()
             self.push(slice(c, b, a))
+
+    def list_to_tuple_op(self, arg: tp.Any) -> None:
+        self.push(tuple(self.pop()))
+
+    def list_extend_op(self, arg: int) -> None:
+        a = self.pop()
+        b = self.pop()
+        b.extend(a)
+        self.push(b)
+
+    def set_update_op(self, arg: int) -> None:
+        a = self.pop()
+        b = self.pop()
+        b.update(a)
+        self.push(b)
+
+    def dict_update_op(self) -> None:
+        a = self.pop()
+        b = self.pop()
+        b.update(a)
+        self.push(b)
+
+    def dict_merge_op(self) -> None:
+        a = self.pop()
+        b = self.pop()
+        b |= a
+        self.push(b)
 
     def store_subscr_op(self, arg: tp.Any) -> None:
         a = self.pop()
@@ -436,6 +441,22 @@ class Frame:
             self.jump_absolute_op(arg)
         else:
             self.pop()
+
+    def is_op_op(self, arg: bool) -> None:
+        a = self.pop()
+        b = self.pop()
+        if arg == 0:
+            self.push(b is a)
+        else:
+            self.push(b is not a)
+
+    def contains_op_op(self, arg: bool) -> None:
+        a = self.pop()
+        b = self.pop()
+        if arg == 0:
+            self.push(a in b)
+        else:
+            self.push(a not in b)
 
 
 class VirtualMachine:

@@ -32,7 +32,7 @@
 Обратите внимание на закомментированный код в файле `vm_runner.py`, он поможет вам при дебаге.
 
 ```bash
-$ pytest test_public.py::test_all_cases[building_list] -vvv
+$ pytest test_public.py::test_all_cases[generator_expression_in_join] -vvv
 ```
 Для тех у кого `zsh`
 ```bash
